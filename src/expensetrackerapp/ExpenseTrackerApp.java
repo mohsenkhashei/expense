@@ -39,6 +39,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -68,6 +69,7 @@ public class ExpenseTrackerApp extends JFrame {
     private void initComponents() {
         // UI Components
         JPanel inputPanel = new JPanel(new GridLayout(5, 2));
+        inputPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         expenseNameField = new JTextField();
         amountField = new JTextField();
@@ -77,6 +79,7 @@ public class ExpenseTrackerApp extends JFrame {
         JButton editExpenseButton = new JButton("Edit Expense");
         JButton deleteExpenseButton = new JButton("Delete Expense");
         JButton showStatsButton = new JButton("Show Statistics");
+        JButton addCategory = new JButton("Add Category");
 
         // Table for displaying expenses
         tableModel = new DefaultTableModel();
@@ -101,6 +104,7 @@ public class ExpenseTrackerApp extends JFrame {
         inputPanel.add(categoryDropdown);
         inputPanel.add(addExpenseButton);
         inputPanel.add(editExpenseButton);
+//        inputPanel.add(addCategory);
 
         // Button listeners
         addExpenseButton.addActionListener(new ActionListener() {
@@ -109,12 +113,15 @@ public class ExpenseTrackerApp extends JFrame {
                 addExpense();
             }
         });
-
+        JPanel inputPanel2 = new JPanel(new GridLayout(1, 2));
         // Add input panel and table to the main frame
+        inputPanel2.add(deleteExpenseButton);
+        inputPanel2.add(addCategory);
         setLayout(new BorderLayout());
         add(inputPanel, BorderLayout.NORTH);
         add(tableScrollPane, BorderLayout.CENTER);
-        add(deleteExpenseButton, BorderLayout.SOUTH);
+        add(inputPanel2, BorderLayout.SOUTH);
+        
         add(showStatsButton, BorderLayout.EAST);
 
         // Show statistics button listener
@@ -130,6 +137,19 @@ public class ExpenseTrackerApp extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 deleteExpense();
+            }
+        });
+        
+        addCategory.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Implement the logic for updating the category dropdown
+                // You can prompt the user to enter a new category and add it to the dropdown
+                String newCategory = JOptionPane.showInputDialog(inputPanel, "Enter a new category:");
+                if (newCategory != null && !newCategory.trim().isEmpty()) {
+                    categoryDropdown.addItem(newCategory);
+                    categoryDropdown.setSelectedItem(newCategory);
+                }
             }
         });
     }
@@ -169,13 +189,7 @@ public class ExpenseTrackerApp extends JFrame {
     private void deleteExpense() {
         int selectedRow = tableModel.getRowCount() > 0 ? tableModel.getRowCount() - 1 : -1;
         if (selectedRow >= 0) {
-            // Update category expenses and day expenses
-            String category = tableModel.getValueAt(selectedRow, 1).toString();
-            double amount = Double.parseDouble(tableModel.getValueAt(selectedRow, 2).toString());
-            categoryExpenses.put(category, categoryExpenses.get(category) - amount);
-            String date = tableModel.getValueAt(selectedRow, 0).toString();
-            dayExpenses.put(date, dayExpenses.get(date) - amount);
-
+       
             // Remove from table
             tableModel.removeRow(selectedRow);
         } else {
